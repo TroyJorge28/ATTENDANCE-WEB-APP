@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Add New Student{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Add New Student</h1>
+
+<form method="post" class="row g-3">
+  <div class="col-md-3">
+    <label class="form-label">Matricule</label>
+    <input type="text" name="matricule" class="form-control" required>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Level</label>
+    <input type="number" name="level" min="1" max="4" class="form-control" required>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Phone</label>
+    <input type="text" name="phone" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Specialty</label>
+    <input type="text" name="specialty" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Role</label>
+    <select name="role" class="form-select">
+      <option value="student" selected>Student</option>
+      <option value="delegate">Delegate</option>
+    </select>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-success">Add Student</button>
+    <a href="{{ url_for('admin_students') }}" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}
