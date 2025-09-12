@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Delegate Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Delegate Dashboard</h1>
+    <div>
+        <span class="badge bg-primary">{{ user_name }} ({{ user_matricule }})</span>
+    </div>
+</div>
+
+{% if current_session %}
+<div class="card mb-4 border-success">
+    <div class="card-header bg-success text-white">
+        <h4>Active Session: {{ current_session.course }}</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Date:</strong> {{ current_session.date }} | <strong>Time:</strong> {{ current_session.time }}</p>
+        {% if current_session.lecture_description %}
+            <p><strong>Lecture Description:</strong> {{ current_session.lecture_description }}</p>
+        {% endif %}
+        <p><strong>Session Started:</strong> {{ current_session.start_time }}</p>
+        <p><strong>QR Code Expires:</strong> {{ current_session.qr_expiry }}</p>
+        <form method="post" action="{{ url_for('delegate.end_session') }}">
+            <button type="submit" class="btn btn-danger">End Session</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>{% if current_session %}Manage Session{% else %}Start New Session{% endif %}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ url_for('delegate.start_session') }}">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="course" class="form-label">Course Name</label>
+                    <input type="text" class="form-control" id="course" name="course" required placeholder="e.g., Mathematics 101">
+                </div>
+                <div class="col-md-3">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ datetime.now().strftime('%Y-%m-%d') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="time" class="form-label">Time</label>
+                    <input type="time" class="form-control" id="time" name="time" value="{{ datetime.now().strftime('%H:%M') }}">
+                </div>
+                <div class="col-12">
+                    <label for="lecture_description" class="form-label">Lecture Description</label>
+                    <textarea class="form-control" id="lecture_description" name="lecture_description" rows="3" placeholder="Summary of what was taught in this lecture"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">{% if current_session %}Update Session{% else %}Start Session{% endif %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if current_session %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Student Attendance</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Name</th>
+                        <th>QR Status</th>
+                        <th>Face ID Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in current_session.students %}
+                    <tr>
+                        <td>{{ student.matricule }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>
+                            {% if student.qr_scanned %}
+                                <span class="badge bg-success">Scanned</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not Scanned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if student.face_verified %}
+                                <span class="badge bg-success">Verified</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Not Verified</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- COMMENTED OUT: Face verification buttons -->
+                            <!--
+                            {% if not student.qr_scanned %}
+                                <button type="button" class="btn btn-sm btn-primary" onclick="showQRCode('{{ student.matricule }}', '{{ student.name }}', '{{ student.qr_code }}')">Show QR</button>
+                            {% elif not student.face_verified %}
+                                <button type="button" class="btn btn-sm btn-success" onclick="verifyFace('{{ student.matricule }}')">Verify Face</button>
+                            {% else %}
+                                <span class="badge bg-success">Completed</span>
+                            {% endif %}
+                            -->
+                            <span class="badge bg-info">Face Recognition Disabled</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h4>Attendance Records</h4>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <a href="{{ url_for('delegate.export_attendance', format='excel') }}" class="btn btn-success btn-sm">Export Excel</a>
+                <a href="{{ url_for('delegate.export_attendance', format='pdf') }}" class="btn btn-danger btn-sm">Export PDF</a>
+            </div>
+            <div>
+                <a href="{{ url_for('auth.reset_request') }}" class="btn btn-outline-primary btn-sm">Reset Password</a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Lecture Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for att, stu in attendance_records %}
+                    <tr>
+                        <td>{{ att.student_matricule }}</td>
+                        <td>{{ stu.name }}</td>
+                        <td>{{ att.course }}</td>
+                        <td>{{ att.date_time.strftime('%Y-%m-%d %H:%M') if att.date_time else '' }}</td>
+                        <td>
+                            <span class="badge {% if att.final_status == 'present' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ att.final_status }}
+                            </span>
+                        </td>
+                        <td>{{ att.lecture_description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
