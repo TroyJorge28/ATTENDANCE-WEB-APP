@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Edit Student{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Student: {{ student.name }}</h1>
+    <a href="{{ url_for('admin_panel.admin_students') }}" class="btn btn-secondary">Back to Students</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+            <div class="col-md-6">
+                <label for="matricule" class="form-label">Matricule</label>
+                <input type="text" class="form-control" id="matricule" value="{{ student.matricule }}" disabled>
+            </div>
+            <div class="col-md-6">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}">
+            </div>
+            <div class="col-md-3">
+                <label for="level" class="form-label">Level</label>
+                <input type="number" class="form-control" id="level" name="level" value="{{ student.level }}" min="1" max="4">
+            </div>
+            <div class="col-md-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}">
+            </div>
+            <div class="col-md-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone" value="{{ student.phone }}">
+            </div>
+            <div class="col-md-3">
+                <label for="specialty" class="form-label">Specialty</label>
+                <input type="text" class="form-control" id="specialty" name="specialty" value="{{ student.specialty }}">
+            </div>
+            <div class="col-md-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="student" {% if student.role == 'student' %}selected{% endif %}>Student</option>
+                    <option value="delegate" {% if student.role == 'delegate' %}selected{% endif %}>Delegate</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="picture" class="form-label">Picture (for Face ID)</label>
+                <input type="file" class="form-control" id="picture" name="picture" accept="image/*">
+                {% if student.picture %}
+                    <div class="mt-2">
+                        <img src="{{ url_for('static', filename=student.picture) }}" alt="Student Picture" width="100">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

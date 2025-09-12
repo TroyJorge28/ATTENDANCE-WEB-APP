@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Add New Student{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Add New Student</h1>
+    <a href="{{ url_for('admin_panel.admin_students') }}" class="btn btn-secondary">Back to Students</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+            <div class="col-md-6">
+                <label for="matricule" class="form-label">Matricule</label>
+                <input type="text" class="form-control" id="matricule" name="matricule" required>
+            </div>
+            <div class="col-md-6">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="col-md-3">
+                <label for="level" class="form-label">Level</label>
+                <input type="number" class="form-control" id="level" name="level" min="1" max="4" required>
+            </div>
+            <div class="col-md-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="col-md-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+            <div class="col-md-3">
+                <label for="specialty" class="form-label">Specialty</label>
+                <input type="text" class="form-control" id="specialty" name="specialty">
+            </div>
+            <div class="col-md-3">
+                <label for="role" class="form-label">Role</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="student" selected>Student</option>
+                    <option value="delegate">Delegate</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="picture" class="form-label">Picture (for Face ID)</label>
+                <input type="file" class="form-control" id="picture" name="picture" accept="image/*">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

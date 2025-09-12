@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Attendance Records{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Attendance Records</h1>
+    <div>
+        <button type="button" class="btn btn-danger" id="deleteSelectedBtn" disabled>Delete Selected</button>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Filter Records</h4>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="matricule" class="form-control" placeholder="Matricule" value="{{ request.args.get('matricule','') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="level" class="form-control" placeholder="Level" value="{{ request.args.get('level','') }}" min="1" max="4">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="course" class="form-control" placeholder="Course" value="{{ request.args.get('course','') }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <form id="deleteForm" method="post" action="{{ url_for('admin_panel.delete_selected_attendance') }}">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
+                            <th>Matricule</th>
+                            <th>Name</th>
+                            <th>Level</th>
+                            <th>Course</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Lecture</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for att, stu in results %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="attendance_ids" value="{{ att.id }}" class="form-check-input attendance-checkbox">
+                            </td>
+                            <td>{{ att.student_matricule }}</td>
+                            <td>{{ stu.name }}</td>
+                            <td>{{ stu.level }}</td>
+                            <td>{{ att.course }}</td>
+                            <td>{{ att.date_time.strftime('%Y-%m-%d %H:%M') if att.date_time else '' }}</td>
+                            <td>
+                                <span class="badge {% if att.final_status == 'present' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ att.final_status }}
+                                </span>
+                            </td>
+                            <td>{{ att.lecture_description }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('admin_panel.delete_attendance', attendance_id=att.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this attendance record?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <input type="hidden" name="redirect_url" value="{{ request.full_path }}">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const attendanceCheckboxes = document.querySelectorAll('.attendance-checkbox');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const deleteForm = document.getElementById('deleteForm');
+
+        // Select all checkboxes
+        selectAllCheckbox.addEventListener('change', function() {
+            attendanceCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateDeleteButton();
+        });
+
+        // Update delete button state
+        attendanceCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateDeleteButton);
+        });
+
+        function updateDeleteButton() {
+            const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+            deleteSelectedBtn.disabled = checkedBoxes.length === 0;
+        }
+
+        // Handle delete selected button
+        deleteSelectedBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+            if (checkedBoxes.length === 0) {
+                alert('Please select at least one record to delete.');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete ${checkedBoxes.length} attendance record(s)?`)) {
+                deleteForm.submit();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Admin Dashboard</h1>
+    <div>
+        <a href="{{ url_for('admin_panel.admin_profile') }}" class="btn btn-outline-primary">My Profile</a>
+        <a href="{{ url_for('auth.reset_request') }}" class="btn btn-outline-secondary ms-2">Reset Password</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <p class="card-text fs-3">{{ total_students }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Attendance Records</h5>
+                <p class="card-text fs-3">{{ total_attendance }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Delegates</h5>
+                <p class="card-text fs-3">{{ delegates }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Quick Actions</h4>
+    </div>
+    <div class="card-body">
+        <a href="{{ url_for('admin_panel.admin_students') }}" class="btn btn-primary me-2">Manage Students</a>
+        <a href="{{ url_for('admin_panel.view_attendance') }}" class="btn btn-success me-2">View Attendance</a>
+        <form method="post" action="{{ url_for('admin_panel.promote_students_route') }}" class="d-inline">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('Promote all students to next level?')">Promote Students</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
