@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Student Attendance System{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Student Attendance System</h1>
+            <p class="lead mb-5">A modern attendance tracking system with QR code scanning and face recognition.</p>
+            <div class="card mx-auto" style="max-width: 500px;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Welcome</h5>
+                    <p class="card-text">Please log in to access the system or sign up if you don't have an account.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+                        <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
